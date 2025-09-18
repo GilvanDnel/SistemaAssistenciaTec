@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Metadados essenciais do documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ordem de Serviço - Planilha</title>
+    
+    <!-- Inclusão do Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ATUALIZAÇÃO: Usando versões mais recentes e estáveis das bibliotecas -->
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.5.28/dist/jspdf.autotable.umd.min.js"></script>
+    
+    <!-- CSS Customizado para o layout de planilha e tema tecnológico -->
+    <style>
+        /* Define a fonte padrão e um fundo escuro para a página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Cor de fundo (slate-900) */
+        }
+
+        /* Estiliza os títulos de cada seção com uma borda inferior */
+        .section-title {
+            font-size: 1.25rem; /* Tamanho da fonte */
+            font-weight: 600; /* Peso da fonte */
+            color: #e2e8f0; /* Cor do texto (slate-200) */
+            border-bottom: 1px solid #475569; /* Borda inferior (slate-600) */
+            padding-bottom: 0.75rem; /* Espaçamento interno inferior */
+            margin-bottom: 1.5rem; /* Margem inferior */
+        }
+
+        /* Define o layout de grade para os formulários, imitando uma planilha */
+        .form-grid {
+            display: grid;
+            /* Duas colunas: a primeira se ajusta ao conteúdo (labels) e a segunda ocupa o espaço restante */
+            grid-template-columns: max-content 1fr;
+            align-items: center; /* Alinha os itens verticalmente ao centro */
+            gap: 1rem 1.5rem; /* Espaçamento entre linhas e colunas */
+        }
+
+        /* Estilo para os labels (etiquetas) dos campos */
+        .form-label {
+            font-weight: 500; /* Peso da fonte */
+            color: #94a3b8; /* Cor do texto (slate-400) */
+            text-align: right; /* Alinha o texto à direita */
+        }
+
+        /* Estilo base para campos de input e textarea */
+        .form-field {
+            width: 100%; /* Ocupa toda a largura da célula */
+            background-color: #1e293b; /* Cor de fundo (slate-800) */
+            border: 1px solid #475569; /* Borda (slate-600) */
+            color: #cbd5e1; /* Cor do texto (slate-300) */
+            padding: 0.5rem 0.75rem; /* Espaçamento interno */
+            border-radius: 0.375rem; /* Bordas arredondadas */
+            transition: all 0.2s ease-in-out; /* Efeito de transição suave */
+        }
+        
+        /* Remove a aparência padrão de setas em campos de número */
+        .form-field::-webkit-outer-spin-button,
+        .form-field::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        /* Estilo do campo quando em foco (clicado) */
+        .form-field:focus {
+            outline: none; /* Remove a borda de foco padrão do navegador */
+            border-color: #22d3ee; /* Muda a cor da borda para ciano (cyan-400) */
+            background-color: #334155; /* Escurece levemente o fundo (slate-700) */
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.3); /* Adiciona uma sombra de anel colorida */
+        }
+
+        /* Estilo do placeholder (texto de exemplo) */
+        .form-field::placeholder {
+            color: #64748b; /* Cor do placeholder (slate-500) */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <!-- Container principal com fundo escuro e bordas arredondadas -->
+    <div class="max-w-5xl mx-auto bg-slate-800/50 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-700">
+
+        <!-- Cabeçalho da página -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-cyan-400">Ordem de Serviço - Assistência Técnica</h1>
+            <p class="text-slate-400 mt-2">Preencha os campos abaixo para registrar a entrada do equipamento.</p>
+        </header>
+
+        <!-- Formulário principal que agrupa todas as seções de entrada de dados -->
+        <form id="service-order-form" class="space-y-10">
+
+            <!-- Seção 1: Identificação das Partes -->
+            <section>
+                <h2 class="section-title">1. Identificação das Partes</h2>
+                <div class="form-grid">
+                    <label for="contratante" class="form-label">Contratante:</label>
+                    <input type="text" id="contratante" class="form-field" placeholder="Instituto Benjamin Constant - 'CETAM'">
+                    
+                    <label for="responsavel_entrega" class="form-label">Responsável/Cliente:</label>
+                    <input type="text" id="responsavel_entrega" class="form-field" placeholder="Professor Wellington Lima">
+                    
+                    <label for="tecnicos" class="form-label">Técnicos Responsáveis:</label>
+                    <input type="text" id="tecnicos" class="form-field" placeholder="Daniel Souza, Gilvan Daniel, Risani Silva">
+                    
+                    <label for="data_entrada" class="form-label">Data de Entrada:</label>
+                    <input type="date" id="data_entrada" class="form-field">
+                </div>
+            </section>
+
+            <!-- Seção 2: Dados do Equipamento -->
+            <section>
+                <h2 class="section-title">2. Dados do Equipamento</h2>
+                <div class="form-grid">
+                    <label for="tipo_equipamento" class="form-label">Tipo de Equipamento:</label>
+                    <input type="text" id="tipo_equipamento" class="form-field" placeholder="Gabinete Torre">
+                    
+                    <label for="marca" class="form-label">Marca:</label>
+                    <input type="text" id="marca" class="form-field" placeholder="HP Compaq">
+                    
+                    <label for="numero_serie" class="form-label">Número de Série:</label>
+                    <input type="text" id="numero_serie" class="form-field" placeholder="B3J7425C9MM">
+                    
+                    <label for="patrimonio" class="form-label">Patrimônio:</label>
+                    <input type="text" id="patrimonio" class="form-field" placeholder="CETAM">
+                    
+                    <label for="codigo_os" class="form-label">Código/OS:</label>
+                    <input type="text" id="codigo_os" class="form-field" placeholder="205008">
+                </div>
+            </section>
+
+            <!-- Seção 3: Checklist do Equipamento -->
+            <section>
+                <h2 class="section-title">3. Checklist do Equipamento</h2>
+                <div class="form-grid">
+                    <label for="chk_gabinete" class="form-label">Gabinete:</label>
+                    <input type="text" id="chk_gabinete" class="form-field" placeholder="Limpo">
+                    
+                    <label for="chk_cabos" class="form-label">Cabos:</label>
+                    <input type="text" id="chk_cabos" class="form-field" placeholder="Organizados e sem danos">
+                    
+                    <label for="chk_ventoinhas" class="form-label">Ventoinha(s):</label>
+                    <input type="text" id="chk_ventoinhas" class="form-field" placeholder="03 unidades">
+                    
+                    <label for="chk_processador" class="form-label">Processador:</label>
+                    <input type="text" id="chk_processador" class="form-field" placeholder="AMD A8 5500- 2011">
+                    
+                    <label for="chk_fonte" class="form-label">Fonte:</label>
+                    <input type="text" id="chk_fonte" class="form-field" placeholder="Funcionando (modelo R1337)">
+                    
+                    <label for="chk_ram" class="form-label">Memória RAM:</label>
+                    <input type="text" id="chk_ram" class="form-field" placeholder="02 placas de 4GB (Smart PN 698650-D2B)">
+                    
+                    <label for="chk_hd" class="form-label">HD/SSD:</label>
+                    <input type="text" id="chk_hd" class="form-field" placeholder="02 HDs Seagate 500GB - N 630929- 001.002">
+                    
+                    <label for="chk_placas" class="form-label">Placas Adicionais:</label>
+                    <input type="text" id="chk_placas" class="form-field" placeholder="Não contém">
+                    
+                    <label for="chk_leitor" class="form-label">Leitor CD/DVD:</label>
+                    <input type="text" id="chk_leitor" class="form-field" placeholder="CD/DVD-RW- Nº R9676YB F107D24">
+                </div>
+            </section>
+
+            <!-- Seção 4: Relatórios e Observações -->
+            <section>
+                <h2 class="section-title">4. Relatórios e Observações</h2>
+                <div class="form-grid">
+                    <label for="problema_relatado" class="form-label">Problema Relatado:</label>
+                    <textarea id="problema_relatado" rows="3" class="form-field" placeholder="O gabinete não liga devido a falha de inicialização causada por software corrompido."></textarea>
+                    
+                    <label for="observacoes_primarias" class="form-label">Observações Primárias:</label>
+                    <textarea id="observacoes_primarias" rows="3" class="form-field" placeholder="O equipamento encontra-se em boa conservação física. Todos os componentes listados estão presentes."></textarea>
+                </div>
+            </section>
+        </form>
+
+        <!-- Botão de Ação para gerar o PDF -->
+        <div class="mt-12 text-center">
+            <button id="generate-pdf" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-cyan-500/20 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-500/50">
+                Gerar Contrato em PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Erro -->
+    <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-800 border border-red-500/50 rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+            <h3 class="text-xl font-bold text-red-400 mb-4">Ocorreu um Erro</h3>
+            <p id="error-message" class="text-slate-300 mb-6 text-left whitespace-pre-wrap"></p>
+            <button id="close-modal-btn" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- Bloco de JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('data_entrada').value = today;
+
+            const errorModal = document.getElementById('error-modal');
+            const errorMessage = document.getElementById('error-message');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            function showError(message) {
+                errorMessage.textContent = 'Detalhes do erro:\n\n' + message;
+                errorModal.classList.remove('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', () => {
+                errorModal.classList.add('hidden');
+            });
+
+            document.getElementById('generate-pdf').addEventListener('click', () => {
+                try {
+                    // ATUALIZAÇÃO: Instanciação do jsPDF para a nova versão da biblioteca
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    const getVal = (id) => document.getElementById(id).value;
+                    
+                    const contratante = getVal('contratante');
+                    const responsavelEntrega = getVal('responsavel_entrega');
+                    const tecnicos = getVal('tecnicos');
+                    const dataEntrada = new Date(getVal('data_entrada')).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+                    const tipoEquipamento = getVal('tipo_equipamento');
+                    const marca = getVal('marca');
+                    const numeroSerie = getVal('numero_serie');
+                    const patrimonio = getVal('patrimonio');
+                    const codigoOs = getVal('codigo_os');
+                    const problemaRelatado = getVal('problema_relatado');
+                    const observacoesPrimarias = getVal('observacoes_primarias');
+                    
+                    doc.setFontSize(18);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('CONTRATO DE PRESTAÇÃO DE SERVIÇOS', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+                    doc.text('DE ASSISTÊNCIA TÉCNICA', doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
+                    
+                    doc.setFontSize(12);
+                    doc.text('1. IDENTIFICAÇÃO DAS PARTES', 14, 45);
+                    doc.autoTable({
+                        startY: 50,
+                        theme: 'grid',
+                        body: [['Contratante', contratante], ['Responsável pela Entrega', responsavelEntrega], ['Técnicos Responsáveis', tecnicos], ['Data da Entrega', dataEntrada]],
+                    });
+
+                    doc.text('2. DADOS DO EQUIPAMENTO', 14, doc.autoTable.previous.finalY + 15);
+                    doc.autoTable({
+                        startY: doc.autoTable.previous.finalY + 20,
+                        theme: 'grid',
+                        body: [['Tipo', tipoEquipamento], ['Marca', marca], ['Nº Série', numeroSerie], ['Patrimônio', patrimonio], ['Código', codigoOs]],
+                    });
+
+                    doc.text('3. CHECKLIST DO EQUIPAMENTO', 14, doc.autoTable.previous.finalY + 15);
+                    doc.autoTable({
+                        startY: doc.autoTable.previous.finalY + 20,
+                        head: [['Componente', 'Situação / Especificação']],
+                        body: [
+                            ['Gabinete', getVal('chk_gabinete')], ['Cabos', getVal('chk_cabos')],
+                            ['Ventoinha(s)', getVal('chk_ventoinhas')], ['Processador', getVal('chk_processador')],
+                            ['Fonte', getVal('chk_fonte')], ['Memória RAM', getVal('chk_ram')],
+                            ['HD/SSD', getVal('chk_hd')], ['Placas Adicionais', getVal('chk_placas')],
+                            ['Leitor CD/DVD', getVal('chk_leitor')],
+                        ],
+                        theme: 'grid',
+                    });
+                    
+                    doc.addPage();
+                    let finalY = 20;
+
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('4. RELATÓRIO DE ERRO IDENTIFICADO', 14, finalY);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(doc.splitTextToSize(problemaRelatado, 180), 14, finalY + 7);
+                    finalY += 30;
+
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('5. POSSÍVEIS PROBLEMAS', 14, finalY);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('5.1 Software', 14, finalY + 7);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(['- Sistema operacional corrompido ou ausente', '- Arquivos de inicialização (boot) danificados', '- Tabela de partição comprometida', '- Vírus ou malware afetando inicialização', '- Configuração incorreta da BIOS/UEFI'], 16, finalY + 14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('5.2 Hardware', 14, finalY + 40);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(['- Setores defeituosos no HD principal', '- Conector SATA com falha ou mau contato', '- Memória RAM instável', '- Defeito na placa-mãe (circuito de inicialização)', '- Superaquecimento impedindo inicialização'], 16, finalY + 47);
+                    finalY += 75;
+
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('6. OBSERVAÇÕES DE AVALIAÇÃO PRIMÁRIA', 14, finalY);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(doc.splitTextToSize(observacoesPrimarias, 180), 14, finalY + 7);
+                    finalY += 30;
+
+                    doc.text('7. TERMOS DO SERVIÇO', 14, finalY);
+                    doc.autoTable({
+                        startY: finalY + 5,
+                        theme: 'grid',
+                        body: [
+                            ['Prazo de Diagnóstico', 'Conforme complexidade do erro e disponibilidade de peças'],
+                            ['Garantia do Serviço', '90 dias após entrega da manutenção'],
+                            ['Responsabilidade do Contratante', 'Informar corretamente o defeito relatado e autorizar reparos adicionais, se necessários'],
+                            ['Responsabilidade da Assistência', 'Executar os serviços com qualidade, prezando pela integridade do equipamento e dos dados'],
+                        ],
+                    });
+                    finalY = doc.autoTable.previous.finalY + 25;
+                    
+                    doc.text('8. ASSINATURAS', 14, finalY);
+                    doc.line(30, finalY + 25, 90, finalY + 25);
+                    doc.text('Responsável Técnico', 60, finalY + 30, {align: 'center'});
+                    doc.line(120, finalY + 25, 180, finalY + 25);
+                    doc.text('Contratante', 150, finalY + 30, {align: 'center'});
+                    
+                    doc.save(`Ordem_de_Servico_${codigoOs || 'OS'}.pdf`);
+                } catch (error) {
+                    console.error('Falha ao gerar o PDF:', error);
+                    showError(error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
